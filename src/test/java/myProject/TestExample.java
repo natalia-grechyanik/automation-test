@@ -40,6 +40,7 @@ public class TestExample {
 	
 	@AfterTest
 	public void afterTest(){
+		System.out.println("##");
 		driver.quit();
 	}
 
