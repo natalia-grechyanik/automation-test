@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="myProject.TestExample" duration-ms="55" started-at="2018-01-30T12:57:02Z" finished-at="2018-01-30T12:57:02Z">
+    <groups>
+    </groups>
+    <test name="Command line test" duration-ms="55" started-at="2018-01-30T12:57:02Z" finished-at="2018-01-30T12:57:02Z">
+      <class name="myProject.TestExample">
+        <test-method status="PASS" signature="exampleOfTestNgMaven()[pri:0, instance:myProject.TestExample@6aaa5eb0]" name="exampleOfTestNgMaven" duration-ms="16" started-at="2018-01-30T15:57:02Z" finished-at="2018-01-30T15:57:02Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- exampleOfTestNgMaven -->
+      </class> <!-- myProject.TestExample -->
+    </test> <!-- Command line test -->
+  </suite> <!-- myProject.TestExample -->
+</testng-results>
