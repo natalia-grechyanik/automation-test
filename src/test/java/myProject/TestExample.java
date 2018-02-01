@@ -7,6 +7,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.openqa.selenium.firefox.FirefoxBinary;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class TestExample {
 
@@ -15,7 +18,15 @@ public class TestExample {
 	@BeforeTest
 	public void beforeTest() throws InterruptedException{
 		System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
-		driver = new ChromeDriver();
+		//driver = new ChromeDriver();
+		
+		FirefoxBinary firefoxBinary = new FirefoxBinary();
+		   firefoxBinary.addCommandLineOptions("--headless");
+		   System.setProperty("webdriver.gecko.driver", "geckodriver");
+		   FirefoxOptions firefoxOptions = new FirefoxOptions();
+		   firefoxOptions.setBinary(firefoxBinary);
+		   FirefoxDriver driver = new FirefoxDriver(firefoxOptions);
+		
 		driver.get("https://login.salesforce.com");
 		
 		Thread.sleep(5000);
