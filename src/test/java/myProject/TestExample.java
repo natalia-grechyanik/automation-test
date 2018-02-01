@@ -1,6 +1,14 @@
 package myProject;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -16,15 +24,16 @@ public class TestExample {
 	public WebDriver driver;
 
 	@BeforeTest
-	public void beforeTest() throws InterruptedException {
+	public void beforeTest() throws InterruptedException, IOException {
 
 		String osName = System.getProperty("os.name");
 		System.out.println(osName);
 
-		if (osName == "Mac OS X") {
-			System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
+		if (osName.equals("Mac OS X")) {
+			System.setProperty("webdriver.chrome.driver", "chromedriver");
 			driver = new ChromeDriver();
-		} else {
+		} else if (osName.equals("Linux")) {
+			System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
 			FirefoxBinary firefoxBinary = new FirefoxBinary();
 			firefoxBinary.addCommandLineOptions("--headless");
 			System.setProperty("webdriver.gecko.driver", "geckodriver");
@@ -32,31 +41,49 @@ public class TestExample {
 			firefoxOptions.setBinary(firefoxBinary);
 			driver = new FirefoxDriver(firefoxOptions);
 		}
-		driver.get("https://login.salesforce.com");
 
-		Thread.sleep(5000);
+		try {
+			driver.get("https://login.salesforce.com");
 
-		WebElement usernameField = driver.findElement(By.id("username"));
-		usernameField.sendKeys("natalia.grechyanik@dev-1.com");
-		WebElement passwordField = driver.findElement(By.id("password"));
-		passwordField.sendKeys("pas5w0rd!");
+			Thread.sleep(5000);
 
-		WebElement loginButton = driver.findElement(By.id("Login"));
-		loginButton.click();
+			WebElement usernameField = driver.findElement(By.id("username"));
+			usernameField.sendKeys("natalia.grechyanik@dev-1.com");
+			WebElement passwordField = driver.findElement(By.id("password"));
+			passwordField.sendKeys("pas5w0rd!");
 
-		Thread.sleep(10000);
+			WebElement loginButton = driver.findElement(By.id("Login"));
+			loginButton.click();
+
+			Thread.sleep(10000);
+		} catch (Exception e) {
+			takeScreenshot();
+		}
 	}
 
 	@Test
-	public void test_1() {
-		System.out.println("test-1");
+	public void test_1() throws IOException {
+		try {
+			System.out.println("test-1");
+			
 
+		} catch (Exception e) {
+			takeScreenshot();
+		}
 	}
 
 	@AfterTest
 	public void afterTest() {
 		System.out.println("####");
 		driver.quit();
+	}
+
+	public void takeScreenshot() throws IOException {
+		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		FileUtils.copyFile(scrFile,
+				new File("screenshots/scrn " + sdf.format(new Timestamp(System.currentTimeMillis())) + ".png"));
+
 	}
 
 }
