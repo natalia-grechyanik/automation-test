@@ -81,9 +81,9 @@ public class TestExample {
 	public void takeScreenshot() throws IOException {
 		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-		FileUtils.copyFile(scrFile,
-				new File("screenshots/scrn " + sdf.format(new Timestamp(System.currentTimeMillis())) + ".png"));
-
+		String scrnName = "scrn " + sdf.format(new Timestamp(System.currentTimeMillis())) + ".png";
+		FileUtils.copyFile(scrFile, new File("screenshots/" + scrnName));
+		System.out.println("Screenshot was saved - " + scrnName);
 	}
 
 }
