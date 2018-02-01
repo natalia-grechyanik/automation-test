@@ -14,7 +14,7 @@ public class TestExample {
 	
 	@BeforeTest
 	public void beforeTest() throws InterruptedException{
-		System.setProperty("webdriver.chrome.driver", "chromedriver");
+		System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
 		driver = new ChromeDriver();
 		driver.get("https://login.salesforce.com");
 		
@@ -40,7 +40,7 @@ public class TestExample {
 	
 	@AfterTest
 	public void afterTest(){
-		System.out.println("##");
+		System.out.println("####");
 		driver.quit();
 	}
 
