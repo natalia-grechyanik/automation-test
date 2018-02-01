@@ -25,7 +25,7 @@ public class TestExample {
 		   System.setProperty("webdriver.gecko.driver", "geckodriver");
 		   FirefoxOptions firefoxOptions = new FirefoxOptions();
 		   firefoxOptions.setBinary(firefoxBinary);
-		   FirefoxDriver driver = new FirefoxDriver(firefoxOptions);
+		   driver = new FirefoxDriver(firefoxOptions);
 		
 		driver.get("https://login.salesforce.com");
 		
