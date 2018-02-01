@@ -65,7 +65,7 @@ public class TestExample {
 	public void test_1() throws IOException {
 		try {
 			System.out.println("test-1");
-			
+			takeScreenshot();
 
 		} catch (Exception e) {
 			takeScreenshot();
