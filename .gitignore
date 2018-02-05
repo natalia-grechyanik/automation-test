@@ -1,7 +1,13 @@
-.classpath
-.project
-.settings/
+*.classpath
+*.project
+*.settings/
 target/
+*.lst
+*.html
+*.txt
+*.xml
+
+
 
 # Compiled class file
 *.class
