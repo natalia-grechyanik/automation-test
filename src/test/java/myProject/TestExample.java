@@ -37,9 +37,12 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import utils.LocatorConfig;
+
 public class TestExample {
 
 	public WebDriver driver;
+	public static LocatorConfig locatorConfig = new LocatorConfig();
 
 	@BeforeTest
 	public void beforeTest() throws InterruptedException, IOException {
@@ -140,76 +143,88 @@ public class TestExample {
 
 	@Test
 	public void test_2() throws Exception {
+
+		String searchWord = "documents";
+		String tabName = "Articles";
+
 		try {
 			driver.get("https://help.salesforce.com");
 
 			waitForPageLoading();
 
-			System.out.println("search for documents");
-			WebElement searchInputField = driver.findElement(By.xpath(
-					"//div[contains(@class,'global-header')]//div[@class='main-navigation']//div[contains(@class,'item_search')]//input"));
-			searchInputField.sendKeys("documents" + Keys.ENTER);
+			System.out.println("Searching for " + searchWord);
+			WebElement searchInputField = driver
+					.findElement(By.xpath(locatorConfig.getLocator("globalHeader.searchInputField")));
+			searchInputField.sendKeys(searchWord + Keys.ENTER);
 
 			waitForPageLoading();
 
-			WebElement pageContent = driver.findElement(By.xpath("//div[@id='searchResults']"));
+			WebElement pageContent = driver
+					.findElement(By.xpath(locatorConfig.getLocator("pageContent.searchResults")));
 
-			System.out.println("select Articles");
-			WebElement tabItem = pageContent
-					.findElement(By.xpath("//div[@class='coveo-tab-section']//a[@data-id='ArticlesTab']"));
+			System.out.println("Selecting tab - " + tabName);
+			WebElement tabItem = pageContent.findElement(
+					By.xpath(String.format(locatorConfig.getLocator("pageContent.searchResults.tab"), tabName)));
 			tabItem.click();
 
 			waitForPageLoading();
 
-			System.out.println("select the first search result item");
-			WebElement searchResult = pageContent.findElement(By
-					.xpath("//div[@class='CoveoResultList']//div[@class='CoveoResult']//a[@class='CoveoResultLink']"));
+			System.out.println("Selecting the first search result item - ");
+			WebElement searchResult = pageContent
+					.findElement(By.xpath(locatorConfig.getLocator("pageContent.searchResults.firstArticle")));
 			String searchResultTitle = searchResult.getText();
 			searchResult.click();
 
 			waitForPageLoading();
 
-			System.out.println("verify article title - " + searchResultTitle);
-			WebElement articleContent = driver.findElement(By.id("art-view-main"));
-			WebElement articleTitle = articleContent.findElement(By.xpath("//h1[@class='helpHead1']"));
+			System.out.println("Verifying article title - " + searchResultTitle);
+			WebElement articleContent = driver.findElement(By.id(locatorConfig.getLocator("articleContentId")));
+			WebElement articleTitle = articleContent
+					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.articleTitle")));
 			Assert.assertEquals(articleTitle.getText(), searchResultTitle);
 
-			WebElement votePanel = driver.findElement(By.xpath("//div[@class='vote-buttons']"));
+			WebElement votePanel = articleContent
+					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel")));
 
 			WebElement voteButton = null;
 
 			List<WebElement> voteButtons = votePanel
-					.findElements(By.xpath("*[contains(@class,'social-icon') and not( contains(@class,'vote') )]"));
+					.findElements(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.voteButtons")));
 			if (voteButtons.size() == 2) {
-				System.out.println("No one vote buttons were clicked. Click Like vote button ");
-				voteButton = voteButtons.get(0).findElement(By.xpath("*[@class='like']"));
+				System.out.println("No one vote buttons was clicked");
+				voteButton = voteButtons.get(0)
+						.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.voteButtons.like")));
 			} else if (voteButtons.size() == 1) {
-				voteButton = voteButtons.get(0).findElement(By.xpath("*[@class]"));
+				voteButton = voteButtons.get(0).findElement(
+						By.xpath(locatorConfig.getLocator("articleContentId.votePanel.voteButtons.button")));
 			} else {
 				System.out.println("Something is wrong with vote buttons");
 				Assert.fail();
 			}
 
 			String className = voteButton.getAttribute("class");
-			System.out.println("Click vote button - " + className);
+			System.out.println("Clicking vote button - " + className);
 			voteButton.click();
 
 			waitForPageLoading();
 
 			WebElement feedbackPanel = votePanel
-					.findElement(By.xpath("following-sibling::div[@class='feedback-panel']"));
-			WebElement textarea = feedbackPanel.findElement(By.xpath("//textarea"));
-			WebElement submitButton = feedbackPanel.findElement(By.xpath("//input[@value='Submit']"));
+					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackPanel")));
+			WebElement textarea = feedbackPanel.findElement(
+					By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackPanel.textarea")));
+			WebElement submitButton = feedbackPanel.findElement(
+					By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackPanel.submitButton")));
 
 			String feedback = className.equals("like") ? "Very helpful" : "Not really helpful";
-
+			System.out.println("Sending a message - " + feedback);
 			textarea.sendKeys(feedback);
 			submitButton.click();
 
 			waitForPageLoading();
 
+			System.out.println("Checking the message has been sent");
 			WebElement confirmation = votePanel
-					.findElement(By.xpath("following-sibling::div/div[@class='comment-thanks']"));
+					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackConfirmation")));
 			Assert.assertEquals(confirmation.getText(), "Thank you for your feedback.");
 
 		} catch (Exception e) {
@@ -223,6 +238,7 @@ public class TestExample {
 		driver.quit();
 	}
 
+	
 	private void takeScreenshot() throws IOException {
 		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
