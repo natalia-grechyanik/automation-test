@@ -148,8 +148,9 @@ public class TestExample {
 		String tabName = "Articles";
 
 		try {
+			
 			driver.get("https://help.salesforce.com");
-
+			
 			waitForPageLoading();
 
 			System.out.println("Searching for " + searchWord);
@@ -169,7 +170,7 @@ public class TestExample {
 
 			waitForPageLoading();
 
-			System.out.println("Selecting the first search result item - ");
+			System.out.println("Selecting the first search result item");
 			WebElement searchResult = pageContent
 					.findElement(By.xpath(locatorConfig.getLocator("pageContent.searchResults.firstArticle")));
 			String searchResultTitle = searchResult.getText();
@@ -182,7 +183,7 @@ public class TestExample {
 			WebElement articleTitle = articleContent
 					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.articleTitle")));
 			Assert.assertEquals(articleTitle.getText(), searchResultTitle);
-
+			
 			WebElement votePanel = articleContent
 					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel")));
 
@@ -223,6 +224,9 @@ public class TestExample {
 			waitForPageLoading();
 
 			System.out.println("Checking the message has been sent");
+			
+			System.out.println(articleContent.getAttribute("innerHTML"));
+			
 			WebElement confirmation = votePanel
 					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackConfirmation")));
 			Assert.assertEquals(confirmation.getText(), "Thank you for your feedback.");
