@@ -5,7 +5,9 @@
     <classes>
       <class name="myProject.TestExample">
         <methods>
-          <include name="test_1"/>
+          <include name="afterTest"/>
+          <include name="beforeTest"/>
+          <include name="test_2"/>
         </methods>
       </class> <!-- myProject.TestExample -->
     </classes>
