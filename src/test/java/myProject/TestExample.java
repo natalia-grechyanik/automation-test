@@ -22,19 +22,19 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Ignore;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Predicate;
 
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import utils.LocatorConfig;
@@ -45,17 +45,12 @@ public class TestExample {
 	public static LocatorConfig locatorConfig = new LocatorConfig();
 	String osName = null;
 
-	@BeforeTest
-	public void beforeTest() throws InterruptedException, IOException {
+	@BeforeTest(alwaysRun=true)
+	public void setUp() throws InterruptedException, IOException {
 
 		osName = System.getProperty("os.name");
 		System.out.println(osName);
-
-		if (osName.equals("Mac OS X")) {
-			System.setProperty("webdriver.chrome.driver", "chromedriver");
-			driver = new ChromeDriver();
-			TimeUnit.SECONDS.sleep(1);
-		} else if (osName.equals("Linux")) {
+		if (osName.equals("Linux")) {
 			System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
 			FirefoxBinary firefoxBinary = new FirefoxBinary();
 			firefoxBinary.addCommandLineOptions("--headless");
@@ -63,13 +58,17 @@ public class TestExample {
 			FirefoxOptions firefoxOptions = new FirefoxOptions();
 			firefoxOptions.setBinary(firefoxBinary);
 			driver = new FirefoxDriver(firefoxOptions);
-		}
+		} else {
+			System.setProperty("webdriver.chrome.driver", "chromedriver");
+			driver = new ChromeDriver();
+			TimeUnit.SECONDS.sleep(1);
+		} 
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 
 	}
 
-	@Test
+	@Test(groups={"Google"})
 	public void test_001() throws Exception {
 		try {
 			System.out.println("test-1");
@@ -142,14 +141,13 @@ public class TestExample {
 		}
 	}
 
-	@Test
+	@Test(groups={"Salesforce"})
 	public void test_002__VoteForArticle() throws Exception {
 
 		String searchWord = "documents";
 		String tabName = "Articles";
 
 		try {
-
 			driver.get("https://help.salesforce.com");
 
 			waitForPageLoading();
@@ -241,12 +239,14 @@ public class TestExample {
 									className)))));
 
 		} catch (Exception e) {
+			System.err.println(e.getMessage());
 			takeScreenshot();
 			throw e;
 		}
 	}
 
 	@Test
+	@Ignore
 	public void test_003__ChromeSettgins() throws Exception {
 
 		if (osName.equals("Linux"))
@@ -273,24 +273,11 @@ public class TestExample {
 					By.cssSelector("div#advancedPage > settings-section[section='privacy'] > settings-privacy-page"));
 			WebElement shadowRoot4 = expandRootElement(root4);
 
-			// WebElement root5 =
-			// shadowRoot4.findElement(By.cssSelector("settings-privacy-page"));
-			// WebElement shadowRoot5 = expandRootElement(root5);
-
-			WebElement root6 = shadowRoot4.findElement(By.cssSelector(
+			WebElement root5 = shadowRoot4.findElement(By.cssSelector(
 					"settings-animated-pages#pages > neon-animatable > settings-toggle-button[label='Защитить устройство от опасных сайтов']"));
-			WebElement shadowRoot6 = expandRootElement(root6);
+			WebElement shadowRoot5 = expandRootElement(root5);
 
-			// WebElement root7 =
-			// shadowRoot6.findElement(By.cssSelector("neon-animatable"));
-			// WebElement shadowRoot7 = expandRootElement(root7);
-
-			// WebElement root8 =
-			// shadowRoot6.findElement(By.cssSelector("settings-toggle-button[label='Защитить
-			// устройство от опасных сайтов']"));
-			// WebElement shadowRoot8 = expandRootElement(root8);
-
-			WebElement control = shadowRoot6.findElement(By.cssSelector("paper-toggle-button#control"));
+			WebElement control = shadowRoot5.findElement(By.cssSelector("paper-toggle-button#control"));
 
 			scrollToElement(control);
 			Thread.sleep(3000);
@@ -301,12 +288,11 @@ public class TestExample {
 			}
 
 		} catch (Exception e) {
-
 			throw e;
 		}
 	}
 
-	@Test
+	@Test(groups={"Salesforce"})
 	public void test_004__WatchVideo() throws Exception {
 		try {
 			driver.get("https://help.salesforce.com/support");
@@ -371,7 +357,7 @@ public class TestExample {
 	}
 
 	@AfterTest
-	public void afterTest() {
+	public void tearDown() {
 		driver.quit();
 	}
 
