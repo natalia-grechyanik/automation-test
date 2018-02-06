@@ -43,16 +43,18 @@ public class TestExample {
 
 	public WebDriver driver;
 	public static LocatorConfig locatorConfig = new LocatorConfig();
+	String osName = null;
 
 	@BeforeTest
 	public void beforeTest() throws InterruptedException, IOException {
 
-		String osName = System.getProperty("os.name");
+		osName = System.getProperty("os.name");
 		System.out.println(osName);
 
 		if (osName.equals("Mac OS X")) {
 			System.setProperty("webdriver.chrome.driver", "chromedriver");
 			driver = new ChromeDriver();
+			TimeUnit.SECONDS.sleep(1);
 		} else if (osName.equals("Linux")) {
 			System.setProperty("webdriver.chrome.driver", "chromedriver-linux");
 			FirefoxBinary firefoxBinary = new FirefoxBinary();
@@ -62,14 +64,13 @@ public class TestExample {
 			firefoxOptions.setBinary(firefoxBinary);
 			driver = new FirefoxDriver(firefoxOptions);
 		}
-
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 
 	}
 
 	@Test
-	public void test_1() throws Exception {
+	public void test_001() throws Exception {
 		try {
 			System.out.println("test-1");
 
@@ -142,15 +143,15 @@ public class TestExample {
 	}
 
 	@Test
-	public void test_2() throws Exception {
+	public void test_002__VoteForArticle() throws Exception {
 
 		String searchWord = "documents";
 		String tabName = "Articles";
 
 		try {
-			
+
 			driver.get("https://help.salesforce.com");
-			
+
 			waitForPageLoading();
 
 			System.out.println("Searching for " + searchWord);
@@ -183,7 +184,7 @@ public class TestExample {
 			WebElement articleTitle = articleContent
 					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.articleTitle")));
 			Assert.assertEquals(articleTitle.getText(), searchResultTitle);
-			
+
 			WebElement votePanel = articleContent
 					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel")));
 
@@ -224,12 +225,20 @@ public class TestExample {
 			waitForPageLoading();
 
 			System.out.println("Checking the message has been sent");
-			
-			System.out.println(articleContent.getAttribute("innerHTML"));
-			
-			WebElement confirmation = votePanel
-					.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackConfirmation")));
-			Assert.assertEquals(confirmation.getText(), "Thank you for your feedback.");
+
+			// WebElement confirmation = votePanel
+			// .findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel.feedbackConfirmation")));
+			// Assert.assertEquals(confirmation.getText(), "Thank you for your
+			// feedback.");
+
+			driver.navigate().refresh();
+
+			(new WebDriverWait(driver, 30)).until(ExpectedConditions
+					.visibilityOf(driver.findElement(By.id(locatorConfig.getLocator("articleContentId")))
+							.findElement(By.xpath(locatorConfig.getLocator("articleContentId.votePanel")))
+							.findElement(By.xpath(String.format(
+									locatorConfig.getLocator("articleContentId.votePanel.clickedVoteButton"),
+									className)))));
 
 		} catch (Exception e) {
 			takeScreenshot();
@@ -237,12 +246,135 @@ public class TestExample {
 		}
 	}
 
+	@Test
+	public void test_003__ChromeSettgins() throws Exception {
+
+		if (osName.equals("Linux"))
+			Assert.fail();
+
+		try {
+			driver.get("chrome://settings/");
+			Thread.sleep(5000);
+
+			WebElement root1 = driver.findElement(By.tagName("settings-ui"));
+			WebElement shadowRoot1 = expandRootElement(root1);
+
+			WebElement root2 = shadowRoot1.findElement(By.cssSelector("settings-main"));
+			WebElement shadowRoot2 = expandRootElement(root2);
+
+			WebElement root3 = shadowRoot2.findElement(By.cssSelector("settings-basic-page"));
+			WebElement shadowRoot3 = expandRootElement(root3);
+
+			WebElement advancedSettings = shadowRoot3.findElement(By.cssSelector("paper-button#advancedToggle"));
+			scrollToElement(advancedSettings);
+			advancedSettings.click();
+
+			WebElement root4 = shadowRoot3.findElement(
+					By.cssSelector("div#advancedPage > settings-section[section='privacy'] > settings-privacy-page"));
+			WebElement shadowRoot4 = expandRootElement(root4);
+
+			// WebElement root5 =
+			// shadowRoot4.findElement(By.cssSelector("settings-privacy-page"));
+			// WebElement shadowRoot5 = expandRootElement(root5);
+
+			WebElement root6 = shadowRoot4.findElement(By.cssSelector(
+					"settings-animated-pages#pages > neon-animatable > settings-toggle-button[label='Защитить устройство от опасных сайтов']"));
+			WebElement shadowRoot6 = expandRootElement(root6);
+
+			// WebElement root7 =
+			// shadowRoot6.findElement(By.cssSelector("neon-animatable"));
+			// WebElement shadowRoot7 = expandRootElement(root7);
+
+			// WebElement root8 =
+			// shadowRoot6.findElement(By.cssSelector("settings-toggle-button[label='Защитить
+			// устройство от опасных сайтов']"));
+			// WebElement shadowRoot8 = expandRootElement(root8);
+
+			WebElement control = shadowRoot6.findElement(By.cssSelector("paper-toggle-button#control"));
+
+			scrollToElement(control);
+			Thread.sleep(3000);
+
+			for (int i = 0; i < 10; i++) {
+				control.click();
+				Thread.sleep(1000);
+			}
+
+		} catch (Exception e) {
+
+			throw e;
+		}
+	}
+
+	@Test
+	public void test_004__WatchVideo() throws Exception {
+		try {
+			driver.get("https://help.salesforce.com/support");
+
+			waitForPageLoading();
+
+			WebElement videosPanel = driver.findElement(By.xpath(locatorConfig.getLocator("videosPanel")));
+			WebElement video = videosPanel
+					.findElement(By.xpath(locatorConfig.getLocator("videosPanel.videos") + "[1]"));
+			WebElement videoThumbnail = video.findElement(By.xpath(locatorConfig.getLocator("videosPanel.videos.img")));
+
+			System.out.println("Clicking a video thumbnail");
+			videoThumbnail.click();
+
+			System.out.println("Waiting for video player");
+			By iframe = By.xpath(locatorConfig.getLocator("iFrame"));
+			(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(iframe));
+			driver.switchTo().frame(driver.findElement(iframe));
+
+			System.out.println("Start playing");
+			WebElement player = driver.findElement(By.xpath(locatorConfig.getLocator("iFrame.player")));
+
+			WebElement playButton = player.findElement(By.xpath(locatorConfig.getLocator("iFrame.player.playButton")));
+			playButton.click();
+
+			Thread.sleep(5000);
+
+			System.out.println("Full screen");
+			Actions action = new Actions(driver);
+			action.moveToElement(player).click().perform();
+
+			WebElement fullScreenButton = player
+					.findElement(By.xpath(locatorConfig.getLocator("iFrame.player.fullScreenButton")));
+			(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOf(fullScreenButton));
+			fullScreenButton.click();
+
+			System.out.println("Exit from Full screen");
+			action.moveToElement(player).perform();
+			(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOf(fullScreenButton));
+			fullScreenButton.click();
+
+			System.out.println("Close the video");
+			action.click().sendKeys(Keys.ESCAPE, Keys.ENTER).build().perform();
+
+			driver.switchTo().defaultContent();
+
+		} catch (Exception e) {
+			takeScreenshot();
+			throw e;
+		}
+	}
+
+	public WebElement expandRootElement(WebElement element) {
+		WebElement ele = (WebElement) ((JavascriptExecutor) driver).executeScript("return arguments[0].shadowRoot",
+				element);
+		return ele;
+	}
+
+	public void scrollToElement(WebElement element) {
+		WebElement ele = (WebElement) ((JavascriptExecutor) driver).executeScript("arguments[0].focus();", element);
+
+	}
+
 	@AfterTest
 	public void afterTest() {
 		driver.quit();
 	}
 
-	
 	private void takeScreenshot() throws IOException {
 		File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
