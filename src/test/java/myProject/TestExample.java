@@ -292,7 +292,7 @@ public class TestExample {
 		}
 	}
 
-	@Test(groups={"Salesforce"})
+	@Test(groups={"Salesforce"}, testName="Watch Video")
 	public void test_004__WatchVideo() throws Exception {
 		try {
 			driver.get("https://help.salesforce.com/support");
@@ -345,6 +345,12 @@ public class TestExample {
 		}
 	}
 
+	@Test(groups={"Salesforce"})
+	public void test_005__Failed() throws Exception {
+		Assert.fail();
+	}
+	
+	
 	public WebElement expandRootElement(WebElement element) {
 		WebElement ele = (WebElement) ((JavascriptExecutor) driver).executeScript("return arguments[0].shadowRoot",
 				element);
