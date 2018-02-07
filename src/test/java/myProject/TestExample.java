@@ -319,9 +319,12 @@ public class TestExample {
 			playButton.click();
 
 			Thread.sleep(5000);
-
-			System.out.println("Full screen");
+			
 			Actions action = new Actions(driver);
+			
+			if(!osName.equals("Linux")){
+			
+			System.out.println("Full screen");
 			action.moveToElement(player).click().perform();
 
 			WebElement fullScreenButton = player
@@ -333,7 +336,8 @@ public class TestExample {
 			action.moveToElement(player).perform();
 			(new WebDriverWait(driver, 30)).until(ExpectedConditions.visibilityOf(fullScreenButton));
 			fullScreenButton.click();
-
+			}
+			
 			System.out.println("Close the video");
 			action.click().sendKeys(Keys.ESCAPE, Keys.ENTER).build().perform();
 
